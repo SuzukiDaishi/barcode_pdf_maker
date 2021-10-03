@@ -4,7 +4,7 @@
 
 ```bash=
 pip install -r requirements.txt
-python pdf_maker.py --input path/to/input/file.csv --output path/to/output/file.pdf
+python pdf_maker.py --input path/to/input/file.csv --output path/to/output/file(拡張子はなし)
 ```
 
 ## 補足

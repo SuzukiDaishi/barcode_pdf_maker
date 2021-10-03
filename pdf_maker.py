@@ -9,8 +9,8 @@ from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output', type=str, required=True, help='Output PDF file name.')
-    parser.add_argument('--input', type=str, required=True, help='Input CSV file name.')
+    parser.add_argument('--output', type=str, required=True, help='Output PDF file name. (no extension)')
+    parser.add_argument('--input', type=str, required=True, help='Input CSV file.')
     args = parser.parse_args()
 
     OUTPUT_FILE_NAME = args.output
@@ -26,8 +26,11 @@ if __name__ == '__main__':
 
         data = [r for r in reader]
         data = filter(lambda r: len(r[0].replace(' ',''))==13 or len(r[0].replace(' ',''))==8, data)
-        data = [*map(lambda r: (r[1].strip().replace('\u3000', ' '), r[0].replace(' ','')), data)]
-        image_paths = [*map(lambda p:f'./barcode/{p[0]}.png', data)]
+        data = [*map(lambda r: (r[1].replace('\u3000', ' ').strip(), r[0].replace(' ',''), r[2].replace('\u3000', ' ').strip()), data)]
+        keys = set([d[2] for d in data])
+        datas = {}
+        for k in keys:
+            datas[k] = [*filter(lambda d:d[2]==k, data)]
 
         print('Make barcode images.')
 
@@ -56,27 +59,29 @@ if __name__ == '__main__':
         
         print('Make PDF file.')
 
-        cv = canvas.Canvas(OUTPUT_FILE_NAME, pagesize=portrait(A4))
-
         pdfmetrics.registerFont(UnicodeCIDFont('HeiseiKakuGo-W5'))
-        cv.setFont('HeiseiKakuGo-W5', 10)
-
-        row = 0
-        col = -1
-        # 210mm x 297mm
-        for i, img in enumerate(image_paths):
-            col += 1
-            if col >= 5:
-                row += 1
-                col = -1
-            if row >= 7:
-                cv.showPage()
-                cv.setFont('HeiseiKakuGo-W5', 10)
-                row = 0
-                col = 0
-            cv.drawString(col*52*mm+5*mm, 297*mm - 10*mm - 50*mm*row, data[i][0])
-            cv.drawImage(img, col*52*mm, 297*mm - 40*mm - 50*mm*row , width=50*mm, height=25*mm)
-        cv.showPage()
-        cv.save()
-
+        for k in datas.keys():
+            cv = canvas.Canvas(f'{OUTPUT_FILE_NAME}_{k}.pdf', pagesize=portrait(A4))
+            cv.setFont('HeiseiKakuGo-W5', 50)
+            cv.drawString(5*mm, 297*mm - 30*mm, k)
+            cv.setFont('HeiseiKakuGo-W5', 10)
+            row = 1
+            col = -1
+            for i, d in enumerate(datas[k]):
+                col += 1
+                if col >= 4:
+                    row += 1
+                    col = 0
+                if row >= 8:
+                    cv.showPage()
+                    cv.setFont('HeiseiKakuGo-W5', 10)
+                    row = 0
+                    col = 0
+                text = d[0]
+                for i in range(0, len(text), 10):
+                    cv.drawString(col*52*mm+5*mm, 297*mm - 7*mm - 35*mm*row - 5*mm*(i//10), text[i:i+10])
+                cv.drawImage(f'./barcode/{d[0]}.png', col*52*mm, 297*mm - 35*mm - 35*mm*row , width=50*mm, height=25*mm)
+            cv.showPage()
+            cv.save()
+            
         print('complete!!')
