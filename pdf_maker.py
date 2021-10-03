@@ -60,11 +60,12 @@ if __name__ == '__main__':
         print('Make PDF file.')
 
         pdfmetrics.registerFont(UnicodeCIDFont('HeiseiKakuGo-W5'))
+        pdfmetrics.registerFont(UnicodeCIDFont('HeiseiMin-W3'))
         for k in datas.keys():
             cv = canvas.Canvas(f'{OUTPUT_FILE_NAME}_{k}.pdf', pagesize=portrait(A4))
             cv.setFont('HeiseiKakuGo-W5', 50)
             cv.drawString(5*mm, 297*mm - 30*mm, k)
-            cv.setFont('HeiseiKakuGo-W5', 10)
+            cv.setFont('HeiseiMin-W3', 8)
             row = 1
             col = -1
             for i, d in enumerate(datas[k]):
@@ -74,12 +75,12 @@ if __name__ == '__main__':
                     col = 0
                 if row >= 8:
                     cv.showPage()
-                    cv.setFont('HeiseiKakuGo-W5', 10)
+                    cv.setFont('HeiseiMin-W3', 8)
                     row = 0
                     col = 0
                 text = d[0]
                 for i in range(0, len(text), 10):
-                    cv.drawString(col*52*mm+5*mm, 297*mm - 7*mm - 35*mm*row - 5*mm*(i//10), text[i:i+10])
+                    cv.drawString(col*52*mm+5*mm, 297*mm - 5*mm - 35*mm*row - 4*mm*(i//10), text[i:i+10])
                 cv.drawImage(f'./barcode/{d[0]}.png', col*52*mm, 297*mm - 35*mm - 35*mm*row , width=50*mm, height=25*mm)
             cv.showPage()
             cv.save()
