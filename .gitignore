@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudiocode
 
 barcode/
+.DS_Store
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
