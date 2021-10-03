@@ -1,0 +1,2 @@
+reportlab==3.6.1
+python-barcode==0.13.1
