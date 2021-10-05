@@ -38,6 +38,7 @@ if __name__ == '__main__':
             os.makedirs('./barcode')
 
         for row in data:
+            jan = None
             if len(row[1]) == 8:
                 jan = barcode.get('ean8', row[1], writer=ImageWriter())
                 filename = jan.save(f'./barcode/{row[0]}',options={
@@ -56,7 +57,6 @@ if __name__ == '__main__':
                     'text_distance':1.5,
                     'font_path':'font/Avenir.ttc'
                     })
-        
         print('Make PDF file.')
 
         pdfmetrics.registerFont(UnicodeCIDFont('HeiseiKakuGo-W5'))
