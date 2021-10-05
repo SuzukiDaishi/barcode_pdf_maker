@@ -31,6 +31,9 @@ if __name__ == '__main__':
         datas = {}
         for k in keys:
             datas[k] = [*filter(lambda d:d[2]==k, data)]
+            datas[k] = [*filter(lambda d:d[1][:4]=='4030', datas[k])]
+            if len(datas[k]) == 0: del datas[k]
+        print(datas)
 
         print('Make barcode images.')
 
@@ -65,7 +68,7 @@ if __name__ == '__main__':
             cv = canvas.Canvas(f'{OUTPUT_FILE_NAME}_{k}.pdf', pagesize=portrait(A4))
             cv.setFont('HeiseiKakuGo-W5', 50)
             cv.drawString(5*mm, 297*mm - 30*mm, k)
-            cv.setFont('HeiseiMin-W3', 8)
+            cv.setFont('HeiseiMin-W3', 15)
             row = 1
             col = -1
             for i, d in enumerate(datas[k]):
@@ -73,15 +76,15 @@ if __name__ == '__main__':
                 if col >= 4:
                     row += 1
                     col = 0
-                if row >= 8:
+                if row >= 7:
                     cv.showPage()
-                    cv.setFont('HeiseiMin-W3', 8)
+                    cv.setFont('HeiseiMin-W3', 15)
                     row = 0
                     col = 0
                 text = d[0]
                 for i in range(0, len(text), 10):
-                    cv.drawString(col*52*mm+5*mm, 297*mm - 5*mm - 35*mm*row - 4*mm*(i//10), text[i:i+10])
-                cv.drawImage(f'./barcode/{d[0]}.png', col*52*mm, 297*mm - 35*mm - 35*mm*row , width=50*mm, height=25*mm)
+                    cv.drawString(col*52*mm+5*mm, 297*mm - 3*mm - 40*mm*row - 5*mm*(i//10), text[i:i+10])
+                cv.drawImage(f'./barcode/{d[0]}.png', col*52*mm, 297*mm - 35*mm - 40*mm*row , width=50*mm, height=25*mm)
             cv.showPage()
             cv.save()
             
